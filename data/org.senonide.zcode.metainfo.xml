@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 Senonide -->
+<component type="desktop-application">
+  <id>org.senonide.zcode</id>
+
+  <name>Zcode</name>
+  <summary>A simple, native code editor for GNOME</summary>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+
+  <description>
+    <p>
+      Zcode is a small, fast code editor for the GNOME desktop, written in Zig
+      on top of GTK 4, libadwaita and GtkSourceView. It aims to stay simple and
+      native: a collapsible project sidebar, syntax-highlighted editing and an
+      integrated terminal, all following the GNOME Human Interface Guidelines.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Collapsible project file tree with git status</li>
+      <li>Syntax highlighting via GtkSourceView and tree-sitter</li>
+      <li>Find a file in the project by name, find and replace in the file</li>
+      <li>Integrated terminal that follows the system style</li>
+      <li>Automatic light/dark mode and selectable editor themes</li>
+      <li>LSP-backed completion, hover, go to definition and formatting</li>
+      <li>Adaptive layout for small screens</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">org.senonide.zcode.desktop</launchable>
+
+  <url type="homepage">https://github.com/senonide/zcode</url>
+  <url type="bugtracker">https://github.com/senonide/zcode/issues</url>
+  <url type="vcs-browser">https://github.com/senonide/zcode</url>
+
+  <developer id="org.senonide">
+    <name>Senonide</name>
+  </developer>
+
+  <content_rating type="oars-1.1" />
+
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#99c1f1</color>
+    <color type="primary" scheme_preference="dark">#1a5fb4</color>
+  </branding>
+
+  <categories>
+    <category>Development</category>
+    <category>TextEditor</category>
+  </categories>
+
+  <keywords>
+    <keyword>editor</keyword>
+    <keyword>code</keyword>
+    <keyword>source</keyword>
+    <keyword>programming</keyword>
+    <keyword>zig</keyword>
+  </keywords>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Editing a project with the sidebar open</caption>
+      <image>https://raw.githubusercontent.com/senonide/zcode/master/screenshots/main.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Dark style</caption>
+      <image>https://raw.githubusercontent.com/senonide/zcode/master/screenshots/dark.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Light style</caption>
+      <image>https://raw.githubusercontent.com/senonide/zcode/master/screenshots/light.png</image>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="0.1.0" date="2026-08-11" type="stable">
+      <description>
+        <p>First public release.</p>
+        <ul>
+          <li>Tree-sitter highlighting for Zig, Go, Rust, C, Python, JavaScript, TypeScript and Markdown</li>
+          <li>Language-server completion, hover, go to definition, diagnostics and formatting</li>
+          <li>Project sidebar with git status, quick open and find and replace</li>
+          <li>Integrated terminal, Markdown and HTML preview, and image viewing</li>
+          <li>Adaptive Adwaita interface with automatic light and dark styles</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>

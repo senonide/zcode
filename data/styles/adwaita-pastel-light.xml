@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Adwaita Pastel (light) — GtkSourceView 5 style scheme.
+
+  Syntax palette: Catppuccin Latte (MIT, © 2021 Catppuccin) — see THIRD-PARTY.md.
+  Editor chrome: Adwaita neutrals (GNOME HIG).
+  The name and the pastel-on-neutral concept are inspired by the Zed theme
+  "Adwaita Pastel"; no code or markup is derived from it.
+-->
+<style-scheme id="adwaita-pastel-light" name="Adwaita Pastel Light" version="1.0">
+  <author>Zcode contributors</author>
+  <description>Adwaita Pastel — pastel syntax on a neutral Adwaita canvas</description>
+
+  <!-- Editor chrome (Adwaita neutrals) -->
+  <color name="bg"             value="#fafafb"/>
+  <color name="fg"             value="#2f2f2f"/>
+  <color name="gutter"         value="#808080"/>
+  <color name="gutter_active"  value="#5f5f5f"/>
+  <color name="active_line"    value="#ebebeb"/>
+  <color name="sel"            value="#acb0be"/>
+  <color name="cursor_c"       value="#dc8a78"/>
+  <color name="match"          value="#cfe0f8"/>
+
+  <!-- Syntax palette (Catppuccin Latte) -->
+  <color name="yellow"   value="#df8e1d"/>
+  <color name="peach"    value="#fe640b"/>
+  <color name="comment"  value="#8c8fa1"/>
+  <color name="blue"     value="#1e66f5"/>
+  <color name="maroon"   value="#e64553"/>
+  <color name="red"      value="#d20f39"/>
+  <color name="teal"     value="#179299"/>
+  <color name="mauve"    value="#8839ef"/>
+  <color name="sky"      value="#04a5e5"/>
+  <color name="green"    value="#40a02b"/>
+  <color name="pink"     value="#ea76cb"/>
+  <color name="flamingo" value="#dd7878"/>
+  <color name="text"     value="#4c4f69"/>
+  <color name="delim"    value="#7c7f93"/>
+  <color name="created"  value="#2ec27e"/>
+  <color name="deleted"  value="#c01c28"/>
+
+  <!-- Chrome -->
+  <style name="text"                   foreground="fg"           background="bg"/>
+  <style name="cursor"                 foreground="cursor_c"/>
+  <style name="secondary-cursor"       foreground="gutter"/>
+  <style name="current-line"           background="active_line"/>
+  <style name="current-line-number"    foreground="gutter_active" background="active_line"/>
+  <style name="line-numbers"           foreground="gutter"       background="bg"/>
+  <style name="selection"              background="sel"/>
+  <style name="bracket-match"          background="sel"          bold="true"/>
+  <style name="bracket-mismatch"       foreground="bg"           background="red"/>
+  <style name="search-match"           background="match"/>
+  <style name="draw-spaces"            foreground="gutter"/>
+  <style name="right-margin"           foreground="active_line"  background="active_line"/>
+
+  <!-- Comments -->
+  <style name="def:comment"             foreground="comment" italic="true"/>
+  <style name="def:shebang"             foreground="comment" italic="true"/>
+  <style name="def:doc-comment-element" foreground="comment" italic="true"/>
+
+  <!-- Constants / numbers -->
+  <style name="def:constant"           foreground="peach"/>
+  <style name="def:special-constant"   foreground="peach"/>
+  <style name="def:number"             foreground="peach"/>
+  <style name="def:decimal"            foreground="peach"/>
+  <style name="def:base-n-integer"     foreground="peach"/>
+  <style name="def:floating-point"     foreground="peach"/>
+  <style name="def:complex"            foreground="peach"/>
+  <style name="def:boolean"            foreground="peach"/>
+
+  <!-- Strings -->
+  <style name="def:string"             foreground="green"/>
+  <style name="def:character"          foreground="green"/>
+  <style name="def:special-char"       foreground="pink"/>
+  <style name="def:builtin"            foreground="red"/>
+
+  <!-- Identifiers / keywords -->
+  <style name="def:keyword"            foreground="mauve"/>
+  <style name="def:statement"          foreground="mauve"/>
+  <style name="def:reserved"           foreground="mauve"/>
+  <style name="def:preprocessor"       foreground="mauve"/>
+  <style name="def:operator"           foreground="sky"/>
+  <style name="def:type"               foreground="yellow"/>
+  <style name="def:function"           foreground="blue"  italic="true"/>
+  <style name="def:identifier"         foreground="text"/>
+
+  <!-- Diagnostics -->
+  <style name="def:error"              foreground="red"    underline="error"/>
+  <style name="def:warning"            foreground="yellow"/>
+  <style name="def:note"               foreground="blue"   bold="true"/>
+  <style name="def:net-address"        foreground="blue"   underline="single"/>
+  <style name="def:underlined"         underline="single"/>
+
+  <!-- Markup -->
+  <style name="def:heading"            foreground="text"   bold="true"/>
+  <style name="def:link-destination"   foreground="blue"   underline="single"/>
+  <style name="def:emphasis"           foreground="red"    italic="true"/>
+  <style name="def:strong-emphasis"    foreground="red"    bold="true"/>
+  <style name="def:inline-code"        foreground="green"/>
+  <style name="def:insertion"          foreground="created"/>
+  <style name="def:deletion"           foreground="deleted"/>
+
+  <!-- Language-specific -->
+  <style name="json:keyname"           foreground="blue"/>
+  <style name="xml:element-name"       foreground="blue"/>
+  <style name="xml:attribute-name"     foreground="yellow"/>
+  <style name="xml:tag"                foreground="blue"/>
+  <style name="diff:added-line"        foreground="created"/>
+  <style name="diff:removed-line"      foreground="deleted"/>
+  <style name="diff:changed-line"      foreground="yellow"/>
+  <style name="diff:location"          foreground="mauve"/>
+</style-scheme>

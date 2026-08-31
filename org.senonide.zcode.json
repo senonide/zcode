@@ -1,0 +1,116 @@
+{
+    "id": "org.senonide.zcode",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "50",
+    "sdk": "org.gnome.Sdk",
+    "command": "zcode",
+
+    "finish-args": [
+        "--share=network",
+        "--share=ipc",
+        "--socket=fallback-x11",
+        "--socket=wayland",
+        "--device=dri",
+        "--filesystem=home",
+        "--talk-name=org.freedesktop.Flatpak"
+    ],
+
+    "cleanup": [
+        "/include",
+        "/lib/pkgconfig",
+        "/lib/cmake",
+        "/lib/*.a",
+        "/lib/*.la",
+        "/share/man",
+        "/share/pkgconfig",
+        "/share/gtk-doc"
+    ],
+
+    "modules": [
+        {
+            "name": "cmark",
+            "buildsystem": "cmake-ninja",
+            "builddir": true,
+            "cleanup": [
+                "/bin"
+            ],
+            "config-opts": [
+                "-DBUILD_SHARED_LIBS=ON"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/commonmark/cmark/archive/refs/tags/0.31.1.tar.gz",
+                    "sha256": "3da93db5469c30588cfeb283d9d62edfc6ded9eb0edc10a4f5bbfb7d722ea802"
+                }
+            ]
+        },
+
+        {
+            "name": "vte",
+            "buildsystem": "meson",
+            "cleanup": [
+                "/bin",
+                "/share/applications",
+                "/share/xdg-terminals"
+            ],
+            "config-opts": [
+                "-Dgtk4=true",
+                "-Dgtk3=false",
+                "-Ddocs=false",
+                "-Dvapi=false",
+                "-D_systemd=false",
+                "-Dgir=false"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.gnome.org/sources/vte/0.84/vte-0.84.0.tar.xz",
+                    "sha256": "0414e31583836aeb7878da25f67c515f7e8879917ecc37c92e26b83e8d8fc3e3"
+                }
+            ]
+        },
+
+        {
+            "name": "zig",
+            "buildsystem": "simple",
+            "cleanup": [
+                "*"
+            ],
+            "build-commands": [
+                "mkdir -p /app/lib/zig /app/bin",
+                "cp -r . /app/lib/zig/",
+                "ln -sf /app/lib/zig/zig /app/bin/zig"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz",
+                    "sha256": "70e49664a74374b48b51e6f3fdfbf437f6395d42509050588bd49abe52ba3d00",
+                    "strip-components": 1
+                }
+            ]
+        },
+
+        {
+            "name": "zcode",
+            "buildsystem": "simple",
+            "x-build-id": "script-terminal",
+            "build-options": {
+                "env": {
+                    "PKG_CONFIG_PATH": "/app/lib64/pkgconfig:/app/lib/pkgconfig:/app/share/pkgconfig",
+                    "ZIG_GLOBAL_CACHE_DIR": "/run/build/zcode/.zig-cache"
+                }
+            },
+            "build-commands": [
+                "zig build --prefix /app -Doptimize=ReleaseFast install"
+            ],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "."
+                }
+            ]
+        }
+    ]
+}

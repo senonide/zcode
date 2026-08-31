@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.senonide.zcode" path="/org/senonide/zcode/">
+
+    <key name="monospace-font" type="s">
+      <default>''</default>
+      <summary>Editor and terminal font</summary>
+      <description>
+        Pango font description used by the source view and the terminal, for
+        example "JetBrains Mono 12". An empty string follows the system
+        monospace font.
+      </description>
+    </key>
+
+    <key name="recent-projects" type="as">
+      <default>[]</default>
+      <summary>Recently opened projects</summary>
+      <description>
+        Absolute paths of the project folders opened most recently, newest
+        first. Trimmed to the ten most recent entries.
+      </description>
+    </key>
+
+    <key name="restore-last-project" type="b">
+      <default>true</default>
+      <summary>Reopen the last project at startup</summary>
+      <description>
+        Whether starting zcode without a path argument reopens the project that
+        was open most recently.
+      </description>
+    </key>
+
+    <key name="style-scheme" type="s">
+      <default>''</default>
+      <summary>Editor colour scheme</summary>
+      <description>
+        Identifier of the GtkSourceView style scheme used by the editor. An
+        empty string follows the system light/dark preference, selecting the
+        bundled Adwaita Pastel pair.
+      </description>
+    </key>
+
+    <key name="tab-width" type="i">
+      <range min="1" max="16"/>
+      <default>4</default>
+      <summary>Width of a tab stop, in characters</summary>
+      <description>Also the width of one indentation level.</description>
+    </key>
+
+    <key name="insert-spaces" type="b">
+      <default>false</default>
+      <summary>Insert spaces instead of tabs</summary>
+      <description>
+        Whether pressing Tab inserts spaces up to the next tab stop rather than
+        a tab character.
+      </description>
+    </key>
+
+    <key name="wrap-lines" type="b">
+      <default>false</default>
+      <summary>Wrap long lines</summary>
+      <description>
+        Whether lines wider than the viewport wrap onto the next display line
+        instead of scrolling horizontally.
+      </description>
+    </key>
+
+    <key name="show-line-numbers" type="b">
+      <default>true</default>
+      <summary>Show line numbers</summary>
+      <description>Whether the editor gutter shows line numbers.</description>
+    </key>
+
+    <key name="right-margin" type="i">
+      <range min="0" max="200"/>
+      <default>0</default>
+      <summary>Column of the right-margin guide</summary>
+      <description>
+        Column at which the editor draws a right-margin guide. Zero hides the
+        guide.
+      </description>
+    </key>
+
+  </schema>
+</schemalist>

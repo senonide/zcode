@@ -1,0 +1,27 @@
+.{
+    .name = .zcode,
+    .version = "0.1.0",
+    // Globally unique package identifier, generated once by the Zig toolchain.
+    .fingerprint = 0x2311e0f7d6e4cb3c, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.16.0",
+
+    .dependencies = .{
+        // Tree-sitter Zig bindings + C core, both vendored under vendor/ so the
+        // build is fully offline (no network fetch).  All grammars (Zig included)
+        // are vendored generated C under vendor/grammars/, so the bindings are the
+        // only tree-sitter dependency.
+        .tree_sitter = .{ .path = "vendor/zig-tree-sitter" },
+    },
+
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "data",
+        "tools",
+        "vendor",
+        "LICENSE",
+        "THIRD-PARTY.md",
+        "README.md",
+    },
+}

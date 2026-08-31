@@ -1,0 +1,46 @@
+name: Bug report
+description: Something in Zcode doesn't work
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you expected, and what you got instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a project
+        2. ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Zcode version
+      description: "From the About dialog, or: flatpak info org.senonide.zcode"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it
+      options:
+        - Flatpak
+        - Built from source
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log output
+      description: "Relevant output from: flatpak run org.senonide.zcode"
+      render: shell

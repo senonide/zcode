@@ -1,0 +1,174 @@
+name: Release
+
+# Also the only place the real binary is compiled: ubuntu-latest's libadwaita
+# is too old for it (see ci.yml), and `zig build test` swaps four C files for
+# stubs.  So this runs on master too, not just on tags — a master push builds
+# and verifies the bundle without cutting a release.
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  APP_ID: org.senonide.zcode
+
+jobs:
+  flatpak:
+    name: Build Flatpak
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # The version is sourced from build.zig.zon (.version) — the single
+      # source of truth the app itself reads at build time.  On a tag push
+      # (vX.Y.Z) the tag must match the manifest; a manual run builds the
+      # manifest version as a plain artifact without cutting a release.
+      - name: Resolve version
+        id: ver
+        run: |
+          manifest=$(awk -F\" '/\.version/ {print $2; exit}' build.zig.zon)
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            tag="${GITHUB_REF#refs/tags/v}"
+            if [ "$tag" != "$manifest" ]; then
+              echo "tag $tag != manifest $manifest" >&2
+              exit 1
+            fi
+          fi
+          echo "version=$manifest" >> "$GITHUB_OUTPUT"
+
+      # The metainfo <releases> block is what Flathub and GNOME Software show,
+      # so it stays hand-written in the repository and a missing entry fails the
+      # build now rather than after the ninety minutes the bundle takes.  The
+      # GitHub release body is not hand-written: it is generated below from the
+      # Conventional Commit subjects since the previous tag, which is why there
+      # is no CHANGELOG.md to keep in sync.  Only enforced when tagging — a
+      # master build is not a release.
+      - name: Check the release is described
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          v="${{ steps.ver.outputs.version }}"
+          metainfo="data/org.senonide.zcode.metainfo.xml"
+          if ! grep -q "<release version=\"$v\"" "$metainfo"; then
+            echo "$metainfo has no <release> entry for $v." >&2
+            exit 1
+          fi
+
+      - name: Generate release notes
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --current
+        env:
+          OUTPUT: release-notes.md
+
+      # A release whose commits are all chore/build (the parsers skip those)
+      # leaves an empty body, and action-gh-release fails on a missing or blank
+      # body_path.  GitHub's own generated notes still carry the full list.
+      - name: Ensure the notes are not empty
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          if ! grep -q '[^[:space:]]' release-notes.md 2>/dev/null; then
+            echo "No user-visible changes; see the commit list below." > release-notes.md
+          fi
+          cat release-notes.md
+
+      # The Zig cache alone peaks at ~5 GB inside the build tree, on top of a
+      # ~2.5 GB GNOME runtime + SDK. Drop the preinstalled toolchains we never
+      # use to keep a comfortable margin.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost "$AGENT_TOOLSDIRECTORY"
+          df -h /
+
+      - name: Install flatpak-builder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+
+      # Ubuntu confines unprivileged user namespaces through AppArmor, which is
+      # what flatpak-builder's bwrap sandbox needs. Kernels without the knob
+      # ignore this.
+      - name: Allow unprivileged user namespaces
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+
+      # cmark, vte and the Zig toolchain are the slow modules; key the cache
+      # on the manifest, with a restore-key fallback so a manifest change
+      # still reuses their builds (flatpak-builder re-validates by source).
+      - name: Restore flatpak-builder cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .flatpak-builder/cache
+            .flatpak-builder/downloads
+            .flatpak-builder/checksums
+          key: flatpak-builder-${{ hashFiles('org.senonide.zcode.json') }}
+          # On a manifest change, fall back to the most recent cache.
+          # flatpak-builder re-validates each module by source checksum, so
+          # unchanged modules (cmark, vte, zig) are reused from the restored
+          # cache even when the manifest key no longer matches.
+          restore-keys: |
+            flatpak-builder-
+      - name: Build bundle
+        run: ./scripts/build-flatpak.sh --bundle
+
+      # Install the bundle and inspect the deployed tree, which exercises the
+      # whole round trip (build → repo → bundle → install) without needing a
+      # display. A missing binary or an uncompiled GSettings schema would abort
+      # the app at startup, so both are worth failing the build over.
+      - name: Verify bundle
+        run: |
+          flatpak install --user --noninteractive --bundle zcode.flatpak
+          flatpak info "$APP_ID"
+          files="$HOME/.local/share/flatpak/app/$APP_ID/current/active/files"
+          test -x "$files/bin/zcode"
+          test -f "$files/share/glib-2.0/schemas/gschemas.compiled"
+          test -f "$files/share/applications/$APP_ID.desktop"
+          test -f "$files/share/metainfo/$APP_ID.metainfo.xml"
+
+      # Name the bundle after what it is: a bare zcode.flatpak is
+      # indistinguishable from any other release once it is sitting in someone's
+      # downloads folder.  The architecture comes from the runner rather than a
+      # literal, so adding an arm64 runner cannot silently mislabel a build.
+      # Installing a bundle is a trust operation, so the checksum ships with it.
+      - name: Package bundle
+        id: pkg
+        run: |
+          bundle="zcode-${{ steps.ver.outputs.version }}-$(uname -m).flatpak"
+          mv zcode.flatpak "$bundle"
+          sha256sum "$bundle" > "$bundle.sha256"
+          cat "$bundle.sha256"
+          echo "bundle=$bundle" >> "$GITHUB_OUTPUT"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zcode-flatpak-${{ steps.ver.outputs.version }}
+          path: |
+            ${{ steps.pkg.outputs.bundle }}
+            ${{ steps.pkg.outputs.bundle }}.sha256
+          retention-days: 30
+
+      # GitHub pre-pends body_path to the notes it generates, so the release
+      # reads as the grouped changelog first and the raw commit/PR list after.
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ steps.pkg.outputs.bundle }}
+            ${{ steps.pkg.outputs.bundle }}.sha256
+          body_path: release-notes.md
+          generate_release_notes: true

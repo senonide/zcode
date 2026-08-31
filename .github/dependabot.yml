@@ -1,0 +1,12 @@
+version: 2
+
+# Only GitHub Actions: everything the app itself builds against is either
+# vendored under vendor/ or comes from the GNOME runtime, so there is no
+# package ecosystem here for Dependabot to track.
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: chore

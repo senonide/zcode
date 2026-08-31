@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+
+      # vendor/ is third-party and keeps upstream formatting.
+      - name: Check formatting
+        run: zig fmt --check build.zig src tools
+
+  test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The test binary links the same libraries as the app (see build.zig), so
+      # the runner needs their development headers even though no window opens.
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgtk-4-dev \
+            libadwaita-1-dev \
+            libgtksourceview-5-dev \
+            libvte-2.91-gtk4-dev \
+            libwebkitgtk-6.0-dev \
+            libcmark-dev
+
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+
+      # Only the tests run here, not `zig build`: the app needs libadwaita 1.8
+      # (AdwShortcutsDialog) and ubuntu-latest ships 1.5, so the real binary is
+      # compiled against the GNOME runtime by the Flatpak workflow instead.
+      # The test build stays within 1.5's surface.
+      - name: Run tests
+        run: zig build test
+
+  data:
+    name: Data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install validators
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            appstream desktop-file-utils
+
+      # --no-net keeps the check offline: the homepage and screenshot URLs are
+      # reachability-tested by Flathub at submission time, not here, and a
+      # network probe would make this job fail for reasons unrelated to the
+      # change under test.
+      - name: Validate AppStream metainfo
+        run: appstreamcli validate --no-net data/org.senonide.zcode.metainfo.xml
+
+      - name: Validate desktop entry
+        run: desktop-file-validate data/org.senonide.zcode.desktop

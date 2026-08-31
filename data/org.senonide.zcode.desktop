@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=Zcode
+GenericName=Code Editor
+Comment=A simple, native code editor for GNOME
+Type=Application
+Exec=zcode %F
+Icon=org.senonide.zcode
+Terminal=false
+Categories=GNOME;GTK;Development;TextEditor;
+Keywords=editor;code;text;source;programming;developer;
+StartupNotify=true
+StartupWMClass=org.senonide.zcode
+Actions=new-window;
+
+[Desktop Action new-window]
+Name=New Window
+Exec=zcode
