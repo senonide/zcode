@@ -153,7 +153,7 @@ jobs:
           echo "bundle=$bundle" >> "$GITHUB_OUTPUT"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: zcode-flatpak-${{ steps.ver.outputs.version }}
           path: |
